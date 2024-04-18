@@ -22,7 +22,7 @@ async function startServer() {
                 id:ID!
                 title:String!
                 completed:Boolean
-                userId:ID!
+                user:User
             }
             
             type Query{
@@ -32,6 +32,12 @@ async function startServer() {
             }
         `,
         resolvers: {
+            Todo:{
+                user:async(todo)=>
+                (
+                    await axios.get(`https://jsonplaceholder.typicode.com/users/${todo.id}`)
+                ).data,
+            },
             Query: {
                 getTodos: async () => (
                     await axios.get('https://jsonplaceholder.typicode.com/todos')).data,
@@ -51,7 +57,7 @@ async function startServer() {
       })
       
     app.use("/graphql", expressMiddleware(server))
-    app.listen(8000, () => console.log("server started for graphql"))
+    app.listen(8000, () => console.log("localhost running on 8000" , "server started for graphql at",new Date().toLocaleString()))
 }
 
 startServer()
